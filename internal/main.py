@@ -7,21 +7,28 @@ import sys
 import pygame
 from background import AutumnBackground
 from characters.main import MainCharacter
+from interface import Interface
+from particles import Particles
 
 pygame.init()
 
 WIDTH, HEIGHT = 1000, 500
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Платформер")
+pygame.display.set_caption("Super-Game")
 
-player_config = {
-    "start_pos": (10, 300),
-    "size": (80, 100),
-    "speed": 5,
-    "jumping_speed": 12,
-}
-player = MainCharacter(player_config)
-bg = AutumnBackground(WIDTH, HEIGHT, particles_count=15)
+
+player = MainCharacter(
+    {
+        "start_pos": (10, 300),
+        "size": (80, 100),
+        "speed": 5,
+        "jumping_speed": 12,
+    }
+)
+bg = AutumnBackground(WIDTH, HEIGHT)
+ui = Interface(health={"pos": (350, 10), "size": (300, 10)})
+leafs = Particles("assets/background/leaf.png")
+leafs.set_particles(15)
 
 RUNNING = True
 while RUNNING:
@@ -29,11 +36,13 @@ while RUNNING:
     for event in events:
         if event.type == pygame.QUIT:
             RUNNING = False
-    bg.display(screen)
 
     keys = pygame.key.get_pressed()
 
+    bg.display(screen)
     player.run(screen, keys)
+    leafs.display(screen)
+    ui.display_health(screen, player)
 
     pygame.display.update()
     pygame.time.Clock().tick(60)
