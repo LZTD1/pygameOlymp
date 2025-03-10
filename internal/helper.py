@@ -15,7 +15,5 @@ def resource_path(relative_path):
         base_path = sys._MEIPASS  # pylint: disable=W0212
     else:
         base_path = os.path.abspath(os.path.dirname(__file__))
-        print(base_path)
-        print(relative_path)
 
     return os.path.join(base_path, relative_path)
