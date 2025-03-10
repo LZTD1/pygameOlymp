@@ -18,24 +18,24 @@ class Character(pygame.sprite.Sprite):
         super().__init__()
         self.config = config
         self.rect = pygame.Rect(config["start_pos"], config["size"])
-        self.speed = config["speed"]
         self.gravity = GRAVITY
         self.vertical_speed = 0
         self.on_ground = True
+        self.health = {"max": 100, "now": 10, "regeneration": 0.05}
 
     def move_left(self):
         """
         Движение в лево, не пересекая границу
         """
-        if self.rect.x - self.speed > 0:
-            self.rect.x -= self.speed
+        if self.rect.x - self.config["speed"] > 0:
+            self.rect.x -= self.config["speed"]
 
     def move_right(self, width):
         """
         Движение в право, не пересекая границу
         """
-        if self.rect.x + self.speed + self.rect.width <= width:
-            self.rect.x += self.speed
+        if self.rect.x + self.config["speed"] + self.rect.width <= width:
+            self.rect.x += self.config["speed"]
 
     def apply_gravity(self):
         """
@@ -48,6 +48,10 @@ class Character(pygame.sprite.Sprite):
                 self.rect.y = self.config["start_pos"][1]
                 self.on_ground = True
                 self.vertical_speed = 0
+
+    def regeneration(self):
+        if self.health["now"] < self.health["max"]:
+            self.health["now"] += self.health["regeneration"]
 
 
 class MainCharacter(Character):
@@ -114,6 +118,7 @@ class MainCharacter(Character):
             self.image, not self.facing_right, False
         )
         self.apply_gravity()
+        self.regeneration()
 
     def move(self, keys: pygame.key.ScancodeWrapper, screen_width):
         """
