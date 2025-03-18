@@ -3,11 +3,13 @@
 """
 
 import pygame
-from helper import resource_path
+
+from internal.helper import resource_path
 
 GRAVITY = 0.8
 ANIMATION_SPEED = 0.1
 
+JUMP_COST = 10
 
 class Character(pygame.sprite.Sprite):
     """
@@ -21,7 +23,19 @@ class Character(pygame.sprite.Sprite):
         self.gravity = GRAVITY
         self.vertical_speed = 0
         self.on_ground = True
-        self.health = {"max": 100, "now": 10, "regeneration": 0.05}
+        self.base_stats = {
+            'health': {
+                "max": 100,
+                "now": 10,
+                "regeneration": 0.05,
+            },
+            "stamina": {
+                "max": 100,
+                "now": 10,
+                "regeneration": 0.1
+            }
+        }
+        self.inventory = [None] * 9
 
     def move_left(self):
         """
@@ -50,8 +64,10 @@ class Character(pygame.sprite.Sprite):
                 self.vertical_speed = 0
 
     def regeneration(self):
-        if self.health["now"] < self.health["max"]:
-            self.health["now"] += self.health["regeneration"]
+        if self.base_stats['health']["now"] < self.base_stats['health']["max"]:
+            self.base_stats['health']["now"] += self.base_stats['health']["regeneration"]
+        if self.base_stats['stamina']["now"] < self.base_stats['stamina']["max"]:
+            self.base_stats['stamina']["now"] += self.base_stats['stamina']["regeneration"]
 
 
 class MainCharacter(Character):
@@ -104,12 +120,12 @@ class MainCharacter(Character):
         if self.animation["is_moving"]:
             self.animation["frame_counter"] += self.animation["speed"]
             if (
-                self.animation["frame_counter"]
-                >= len(self.animation["sprites"]) - 1
+                    self.animation["frame_counter"]
+                    >= len(self.animation["sprites"]) - 1
             ):
                 self.animation["frame_counter"] = 0
             self.animation["current_index"] = (
-                int(self.animation["frame_counter"]) + 1
+                    int(self.animation["frame_counter"]) + 1
             )
         else:
             self.animation["current_index"] = 0
@@ -140,8 +156,9 @@ class MainCharacter(Character):
         """
         Выполнение прыжка персонажа, если он находится на земле.
         """
-        if self.on_ground:
+        if self.on_ground and self.base_stats['stamina']['now'] - JUMP_COST > 0:
             self.vertical_speed = self.config["jumping_speed"] * -1
+            self.base_stats['stamina']['now'] -= JUMP_COST
             self.on_ground = False
 
     def run(self, screen: pygame.Surface, keys: pygame.key.ScancodeWrapper):

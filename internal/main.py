@@ -5,6 +5,7 @@
 import sys
 
 import pygame
+
 from background import AutumnBackground
 from characters.main import MainCharacter
 from interface import Interface
@@ -16,7 +17,6 @@ WIDTH, HEIGHT = 1000, 500
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Super-Game")
 
-
 player = MainCharacter(
     {
         "start_pos": (10, 300),
@@ -26,7 +26,14 @@ player = MainCharacter(
     }
 )
 bg = AutumnBackground(WIDTH, HEIGHT)
-ui = Interface(health={"pos": (350, 10), "size": (300, 10)})
+ui = Interface(
+    stats={
+        'pos': (350, 450),
+        'stamina_color': (43, 71, 196),
+        'health_color': (200, 0, 0),
+        'bg_color': (101, 67, 33),
+    }
+)
 leafs = Particles("assets/background/leaf.png")
 leafs.set_particles(15)
 
@@ -42,7 +49,8 @@ while RUNNING:
     bg.display(screen)
     player.run(screen, keys)
     leafs.display(screen)
-    ui.display_health(screen, player)
+
+    ui.display_stats(screen, player)
 
     pygame.display.update()
     pygame.time.Clock().tick(60)
