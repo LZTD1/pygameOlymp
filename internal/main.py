@@ -31,7 +31,14 @@ ui = Interface(
         'pos': (350, 450),
         'stamina_color': (43, 71, 196),
         'health_color': (200, 0, 0),
-        'bg_color': (101, 67, 33),
+        'bg_color': (69, 69, 69),
+        'border_color': (43, 43, 43),
+    },
+    inventory={
+        'pos': (350, 410),
+        'border_color': (43, 43, 43),
+        'fill_color': (69, 69, 69),
+        'active_color': (89, 171, 63),
     }
 )
 leafs = Particles("assets/background/leaf.png")
@@ -51,6 +58,7 @@ while RUNNING:
     leafs.display(screen)
 
     ui.display_stats(screen, player)
+    ui.display_inventory(screen, player)
 
     pygame.display.update()
     pygame.time.Clock().tick(60)

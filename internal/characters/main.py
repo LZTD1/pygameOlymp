@@ -11,6 +11,7 @@ ANIMATION_SPEED = 0.1
 
 JUMP_COST = 10
 
+
 class Character(pygame.sprite.Sprite):
     """
     Родитель для всех персонажей в игре
@@ -35,7 +36,10 @@ class Character(pygame.sprite.Sprite):
                 "regeneration": 0.1
             }
         }
-        self.inventory = [None] * 9
+        self.inventory = {
+            'all': [None] * 9,
+            'active_slot': 0
+        }
 
     def move_left(self):
         """
@@ -161,10 +165,24 @@ class MainCharacter(Character):
             self.base_stats['stamina']['now'] -= JUMP_COST
             self.on_ground = False
 
+    def inventory_selector(self, keys: pygame.key.ScancodeWrapper):
+        """
+        Выбор слота в инвентаре с помощью клавиш 1-9.
+
+        Клавиши:
+        K_1 = 49, K_2 = 50, ..., K_9 = 57
+        Слоты: 0-8
+        """
+        for key in range(pygame.K_1, pygame.K_9 + 1):
+            if keys[key]:
+                self.inventory["active_slot"] = key - 49
+                break
+
     def run(self, screen: pygame.Surface, keys: pygame.key.ScancodeWrapper):
         """
         Основная функция для запуска логики персонажа.
         """
         self.move(keys, screen.get_width())
+        self.inventory_selector(keys)
         self.update()
         screen.blit(self.image, self.rect)
